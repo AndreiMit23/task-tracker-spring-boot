@@ -49,4 +49,8 @@ public class Task {
         this.status = newStatus;
     }
 
+    public void setUpdatedAt(Date UpdatedAt){
+        this.updatedAt = UpdatedAt;
+    }
+
 }

@@ -15,7 +15,7 @@ public class TaskService {
 
     private TaskRepository tasks = new TaskRepository();
 
-    public Task createTask(String title, TaskStatus status){
+    public Task createTask(String title, TaskStatus status) {
         Date now = new Date();
 
         if (status == null) {
@@ -25,24 +25,26 @@ public class TaskService {
         long id = tasks.tasks.size() + 1;
 //        String id = UUID.randomUUID().toString();
 
-        Task task = new Task(id,title,status,now,now);
+        Task task = new Task(id, title, status, now, now);
 
         tasks.addTask(task);
 
         return task;
     }
 
-    public Task getTaskByID(Long id){
+    public Task getTaskByID(Long id) {
         return tasks.getTask(id);
     }
 
-    public TaskRepository getAllTasks(){
-        return tasks;
+    public ArrayList<Task> getAllTasks() {
+        return tasks.getAllTasks();
     }
 
-    public void deleteTask(Long id){
-        if(tasks.getTask(id) != null){
-            tasks.removeTask(id);
-        }
+    public void updateTask(Long id, String title, TaskStatus taskStatus){
+        tasks.updateTask(id,title,taskStatus);
+    }
+
+    public void deleteTask(Long id) {
+        tasks.removeTask(id);
     }
 }
