@@ -5,6 +5,7 @@ import application.TaskStatus;
 import org.springframework.stereotype.Repository;
 import repository.TaskRepository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ import static application.TaskStatus.PENDING;
 
 public class TaskService {
 
-    private TaskRepository tasks;
+    private TaskRepository tasks = new TaskRepository();
 
     public Task createTask(String title, TaskStatus status){
         Date now = new Date();
@@ -35,5 +36,13 @@ public class TaskService {
         return tasks.getTask(id);
     }
 
+    public TaskRepository getAllTasks(){
+        return tasks;
+    }
 
+    public void deleteTask(Long id){
+        if(tasks.getTask(id) != null){
+            tasks.removeTask(id);
+        }
+    }
 }

@@ -41,4 +41,12 @@ public class Task {
         return status;
     }
 
+    public void setTitle(String newTitle){
+        this.title = newTitle;
+    }
+
+    public void setStatus(TaskStatus newStatus){
+        this.status = newStatus;
+    }
+
 }
