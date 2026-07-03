@@ -1,19 +1,19 @@
 package service;
 
-import application.Task;
-import application.TaskStatus;
-import org.springframework.stereotype.Repository;
+import module.Task;
+import module.TaskStatus;
+import org.springframework.stereotype.Service;
 import repository.TaskRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.UUID;
 
-import static application.TaskStatus.PENDING;
+import static module.TaskStatus.PENDING;
 
+@Service //componenta care tine logica de business
 public class TaskService {
 
-    private TaskRepository tasks = new TaskRepository();
+    private final TaskRepository repository = new TaskRepository();
 
     public Task createTask(String title, TaskStatus status) {
         Date now = new Date();
@@ -22,29 +22,29 @@ public class TaskService {
             status = PENDING;
         }
 
-        long id = tasks.tasks.size() + 1;
+        long id = repository.getSize();
 //        String id = UUID.randomUUID().toString();
 
         Task task = new Task(id, title, status, now, now);
 
-        tasks.addTask(task);
+        repository.addTask(task);
 
         return task;
     }
 
     public Task getTaskByID(Long id) {
-        return tasks.getTask(id);
+        return repository.getTask(id);
     }
 
     public ArrayList<Task> getAllTasks() {
-        return tasks.getAllTasks();
+        return repository.getAllTasks();
     }
 
     public void updateTask(Long id, String title, TaskStatus taskStatus){
-        tasks.updateTask(id,title,taskStatus);
+        repository.updateTask(id,title,taskStatus);
     }
 
     public void deleteTask(Long id) {
-        tasks.removeTask(id);
+        repository.removeTask(id);
     }
 }

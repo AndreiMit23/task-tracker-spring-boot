@@ -1,4 +1,4 @@
-package application;
+package module;
 
 public enum TaskStatus {
     PENDING,

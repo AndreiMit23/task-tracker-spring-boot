@@ -1,14 +1,16 @@
 package repository;
 
-import application.Task;
-import application.TaskStatus;
+import module.Task;
+import module.TaskStatus;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.NoSuchElementException;
 
+@Repository //componenta care se ocupa cu accesul la date
 public class TaskRepository {
-    public ArrayList<Task> tasks = new ArrayList<>();
+    private final ArrayList<Task> tasks = new ArrayList<>();
     // nu mai salvam in heap ci in baza de date
     public void addTask(Task task){
         tasks.add(task);
@@ -50,6 +52,10 @@ public class TaskRepository {
 
     public ArrayList<Task> getAllTasks(){
         return tasks;
+    }
+
+    public int getSize(){
+        return tasks.size() + 1;
     }
 
 }

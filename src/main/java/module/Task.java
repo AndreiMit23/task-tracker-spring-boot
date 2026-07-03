@@ -1,16 +1,16 @@
-package application;
+package module;
 
 import java.util.Date;
 
-import static application.TaskStatus.PENDING;
+import static module.TaskStatus.PENDING;
 
 //!Task is used for data storing
 
 public class Task {
-    private Long id;
+    private final Long id;
     private String title;
     private TaskStatus status = PENDING; //default status PENDING
-    private Date createdAt;
+    private final Date createdAt;
     private Date updatedAt;
 
     public Task(long ID, String titleTask, TaskStatus statusTask, Date CreatedAt, Date UpdatedAt) {
