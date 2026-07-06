@@ -1,44 +1,49 @@
 package controller;
 
 import module.Task;
-import module.TaskStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+import module.TaskRequest;
 import org.springframework.web.bind.annotation.*;
 import service.TaskService;
-
-import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController //componenta care primeste request-uri HTTP
 @RequestMapping("/tasks") // scriu asa ca sa nu mai scriu in toate metodele "/tasks" ... toate endpoint urile incep cu /tasks
 public class TaskController {
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    @PostMapping
-    public Task createTask(@RequestParam String title, @RequestParam(required = false) TaskStatus status){ //idea la status este ca el este optional, deci varianta asta imi permite sa nu l oblig pe utilizator sa trimita mereu si statusul (ca tot in cerinta zicea ca e optional)
-        return taskService.createTask(title,status);
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
-    @GetMapping
-    public Task getTaskById(@RequestParam Long id){
+    //RequestBody cand vreau sa iau din body ul de pe Postman
+    @PostMapping
+    public Task createTask(@RequestBody TaskRequest taskRequest){
+        return taskService.createTask(taskRequest.getTitle(),taskRequest.getStatus());
+    }
+
+    @GetMapping("/{id}")
+    public Task getTaskById(@PathVariable Long id){
         return taskService.getTaskByID(id);
     }
 
-    //intre cele 2 GetMapping exista diferentierea aceasta deoarece apare intrebarea : Ce metoda sa aleg?
-    //amandoua sunt "rutate" spre acelasi endpoint
-    @GetMapping("/all")
-    public ArrayList<Task> getAllTasks(){
+    @GetMapping
+    public List<Task> getAllTasks(){
         return taskService.getAllTasks();
     }
 
-    @PutMapping
-    public void updateTask(@RequestParam Long id, @RequestParam String title, @RequestParam TaskStatus status){
-        taskService.updateTask(id,title,status);
+    @PutMapping("/{id}")
+    public void updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest){
+        taskService.updateTask(id,taskRequest.getTitle(),taskRequest.getStatus());
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTaskById(@PathVariable Long id){
+        taskService.deleteTaskById(id);
     }
 
     @DeleteMapping
-    public void deleteTask(@RequestParam Long id){
-        taskService.deleteTask(id);
+    public void deleteTask(@RequestBody Task task){
+        taskService.deleteTask(task);
     }
 }

@@ -3,17 +3,22 @@ package service;
 import module.Task;
 import module.TaskStatus;
 import org.springframework.stereotype.Service;
-import repository.TaskRepository;
+import repository.ITaskRepository;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static module.TaskStatus.PENDING;
 
 @Service //componenta care tine logica de business
 public class TaskService {
 
-    private final TaskRepository repository = new TaskRepository();
+    private final ITaskRepository iTaskRepository;
+
+    public TaskService(ITaskRepository iTaskRepository) {
+        this.iTaskRepository = iTaskRepository;
+//        this.taskRepository = taskRepository;
+    }
 
     public Task createTask(String title, TaskStatus status) {
         Date now = new Date();
@@ -22,29 +27,40 @@ public class TaskService {
             status = PENDING;
         }
 
-        long id = repository.getSize();
+//        long id = repository.getSize();
 //        String id = UUID.randomUUID().toString();
 
-        Task task = new Task(id, title, status, now, now);
+         iTaskRepository.count();
 
-        repository.addTask(task);
+        Task task = new Task(title, status, now, now);
+
+        iTaskRepository.save(task);
 
         return task;
     }
 
     public Task getTaskByID(Long id) {
-        return repository.getTask(id);
+        return iTaskRepository.findById(id).get();
     }
 
-    public ArrayList<Task> getAllTasks() {
-        return repository.getAllTasks();
+    public List<Task> getAllTasks() {
+        return iTaskRepository.findAll();
     }
 
     public void updateTask(Long id, String title, TaskStatus taskStatus){
-        repository.updateTask(id,title,taskStatus);
+        Date now = new Date();
+        Task task = new Task(id,title,taskStatus,now,now);
+        iTaskRepository.save(task);
     }
 
-    public void deleteTask(Long id) {
-        repository.removeTask(id);
+    public void deleteTaskById(Long id) {
+        iTaskRepository.deleteById(id);
+    }
+
+    public void deleteTask(Task task){
+        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null)
+            throw new IllegalArgumentException("All fields are required: id, title,status");
+        else
+            iTaskRepository.delete(task);
     }
 }

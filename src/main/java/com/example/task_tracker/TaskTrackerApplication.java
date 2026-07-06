@@ -2,15 +2,18 @@ package com.example.task_tracker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-//Am facut asta ca eu am scris pachetele inafara pachetului com.example... :))))))))))))))))))
-//Am incercat varianta cu mutarea pachetelor dar nu mergea... si am ales asta
+//used for packageScan, because my packages are not in the same package as TaskTrackerApp
 @SpringBootApplication(scanBasePackages = {
         "controller",
         "service",
         "repository",
         "module"
 })
+@EnableJpaRepositories(basePackages = "repository")
+@EntityScan(basePackages = "module")
 public class TaskTrackerApplication {
 
     public static void main(String[] args) {
