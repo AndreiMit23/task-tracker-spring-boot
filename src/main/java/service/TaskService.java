@@ -1,14 +1,14 @@
 package service;
 
 import module.Task;
+import module.TaskRequest;
 import module.TaskStatus;
 import org.springframework.stereotype.Service;
 import repository.ITaskRepository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
-
-import static module.TaskStatus.PENDING;
+import java.util.NoSuchElementException;
 
 @Service //componenta care tine logica de business
 public class TaskService {
@@ -20,19 +20,16 @@ public class TaskService {
 //        this.taskRepository = taskRepository;
     }
 
-    public Task createTask(String title, TaskStatus status) {
-        Date now = new Date();
-
-        if (status == null) {
-            status = PENDING;
-        }
+    public Task createTask(TaskRequest taskRequest) {
 
 //        long id = repository.getSize();
 //        String id = UUID.randomUUID().toString();
+//         iTaskRepository.count();
 
-         iTaskRepository.count();
+        Task task = new Task(taskRequest.getTitle(),taskRequest.getDescription(), taskRequest.getPriority(),taskRequest.getDueDate());
 
-        Task task = new Task(title, status, now, now);
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
 
         iTaskRepository.save(task);
 
@@ -40,16 +37,24 @@ public class TaskService {
     }
 
     public Task getTaskByID(Long id) {
-        return iTaskRepository.findById(id).get();
+        return iTaskRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task with id " + id + " not found"));
     }
 
     public List<Task> getAllTasks() {
         return iTaskRepository.findAll();
     }
 
-    public void updateTask(Long id, String title, TaskStatus taskStatus){
-        Date now = new Date();
-        Task task = new Task(id,title,taskStatus,now,now);
+    public void updateTask(Long id, TaskRequest taskRequest){
+
+        Task task = iTaskRepository.findById(id).orElseThrow();
+
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setTaskPriority(taskRequest.getPriority());
+        task.setDueDate(taskRequest.getDueDate());
+
+        task.setUpdatedAt(LocalDateTime.now());
+
         iTaskRepository.save(task);
     }
 
@@ -57,10 +62,11 @@ public class TaskService {
         iTaskRepository.deleteById(id);
     }
 
-    public void deleteTask(Task task){
-        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null)
-            throw new IllegalArgumentException("All fields are required: id, title,status");
-        else
-            iTaskRepository.delete(task);
+    public void deleteTask(Long id){
+        Task task = iTaskRepository.findById(id).orElseThrow();
+
+        if(task.getStatus() != TaskStatus.COMPLETED)
+            throw new IllegalStateException("Only completed tasks can be deleted");
+        iTaskRepository.delete(task);
     }
 }

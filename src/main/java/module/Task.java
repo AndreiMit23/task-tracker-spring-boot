@@ -2,7 +2,7 @@ package module;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static module.TaskStatus.PENDING;
 
@@ -13,23 +13,28 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String title;
-    TaskStatus status = PENDING; //default status PENDING
-    @Column(name = "created_at")
-    Date createdAt;
-    Date updatedAt;
+    String description;
+    boolean archived = false;
 
-    public Task(Long ID, String titleTask, TaskStatus statusTask, Date CreatedAt, Date UpdatedAt) {
-        this.id = ID;
+
+    @Enumerated(EnumType.STRING) //in baza de date JPA salveaza ca fiind STRING urile setate, nu 0 1 2...
+    TaskStatus status = PENDING; //default status PENDING
+
+    @Enumerated(EnumType.STRING)
+    TaskPriority taskPriority = TaskPriority.MEDIUM;
+
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    LocalDateTime updatedAt;
+
+    LocalDateTime dueDate;
+
+    public Task(String titleTask, String description, TaskPriority priority, LocalDateTime dueDate) {
         this.title = titleTask;
-        this.status = statusTask;
-        this.createdAt = CreatedAt;
-        this.updatedAt = UpdatedAt;
-    }
-    public Task(String titleTask, TaskStatus statusTask, Date CreatedAt, Date UpdatedAt) {
-        this.title = titleTask;
-        this.status = statusTask;
-        this.createdAt = CreatedAt;
-        this.updatedAt = UpdatedAt;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.taskPriority = priority;
     }
 
     public Task() {
@@ -40,32 +45,35 @@ public class Task {
         return title;
     }
 
+    public void setTitle(String newTitle) {
+        this.title = newTitle;
+    }
+
     public Long getId() {
         return id;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTaskPriority(TaskPriority taskPriority) {
+        this.taskPriority = taskPriority;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
     }
 
     public TaskStatus getStatus() {
         return status;
     }
-
-    public void setTitle(String newTitle){
-        this.title = newTitle;
-    }
-
-    public void setStatus(TaskStatus newStatus){
-        this.status = newStatus;
-    }
-
-    public void setUpdatedAt(Date UpdatedAt){
-        this.updatedAt = UpdatedAt;
-    }
-
 }

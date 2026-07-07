@@ -19,7 +19,7 @@ public class TaskController {
     //RequestBody cand vreau sa iau din body ul de pe Postman
     @PostMapping
     public Task createTask(@RequestBody TaskRequest taskRequest){
-        return taskService.createTask(taskRequest.getTitle(),taskRequest.getStatus());
+        return taskService.createTask(taskRequest);
     }
 
     @GetMapping("/{id}")
@@ -34,7 +34,7 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public void updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest){
-        taskService.updateTask(id,taskRequest.getTitle(),taskRequest.getStatus());
+        taskService.updateTask(id,taskRequest);
     }
 
     @DeleteMapping("/{id}")
@@ -42,8 +42,8 @@ public class TaskController {
         taskService.deleteTaskById(id);
     }
 
-    @DeleteMapping
-    public void deleteTask(@RequestBody Task task){
-        taskService.deleteTask(task);
+    @DeleteMapping("/remove/{id}")
+    public void deleteTask(@PathVariable Long id){
+        taskService.deleteTask(id);
     }
 }

@@ -1,12 +1,22 @@
 package module;
 
+import java.time.LocalDateTime;
+
 public class TaskRequest {
     private String title;
-    private TaskStatus status;
+    private String description;
+    private TaskPriority priority;
+    private LocalDateTime dueDate;
 
-    public TaskRequest(String title, TaskStatus status) {
+    public TaskRequest(String title, String description, TaskPriority priority, LocalDateTime dueDate) {
         this.title = title;
-        this.status = status;
+        this.description = description;
+        this.priority = priority;
+        this.dueDate = dueDate;
+    }
+
+    public TaskRequest() {
+
     }
 
     public String getTitle() {
@@ -17,11 +27,28 @@ public class TaskRequest {
         this.title = title;
     }
 
-    public TaskStatus getStatus() {
-        return status;
+    public TaskPriority getPriority() {
+        return priority;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate){
+        this.dueDate = dueDate;
+    }
+
 }
