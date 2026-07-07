@@ -30,7 +30,7 @@ public class TaskService {
 //        long id = repository.getSize();
 //        String id = UUID.randomUUID().toString();
 
-         iTaskRepository.count();
+        iTaskRepository.count();
 
         Task task = new Task(title, status, now, now);
 
@@ -47,9 +47,9 @@ public class TaskService {
         return iTaskRepository.findAll();
     }
 
-    public void updateTask(Long id, String title, TaskStatus taskStatus){
+    public void updateTask(Long id, String title, TaskStatus taskStatus) {
         Date now = new Date();
-        Task task = new Task(id,title,taskStatus,now,now);
+        Task task = new Task(id, title, taskStatus, now, now);
         iTaskRepository.save(task);
     }
 
@@ -57,10 +57,20 @@ public class TaskService {
         iTaskRepository.deleteById(id);
     }
 
-    public void deleteTask(Task task){
-        if(task.getId() == null || task.getTitle() == null || task.getStatus() == null)
+    public void deleteTask(Task task) {
+        if (task.getId() == null || task.getTitle() == null || task.getStatus() == null)
             throw new IllegalArgumentException("All fields are required: id, title,status");
         else
             iTaskRepository.delete(task);
+    }
+
+    public List<Task> findByTitle(String title){
+        return iTaskRepository.findByTitle(title);
+    }
+
+    public List<Task> findByStatus(TaskStatus status){
+        if(status == null)
+            throw new IllegalArgumentException("Status field is required: status: ");
+        return iTaskRepository.findByStatus(status);
     }
 }
