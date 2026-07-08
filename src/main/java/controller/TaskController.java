@@ -1,9 +1,14 @@
 package controller;
 
 import module.Task;
+import module.TaskPriority;
 import module.TaskRequest;
+import module.TaskStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import service.TaskService;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -30,6 +35,31 @@ public class TaskController {
     @GetMapping
     public List<Task> getAllTasks(){
         return taskService.getAllTasks();
+    }
+
+    @GetMapping("/status/{status}")
+    public List<Task> findByStatus(@PathVariable TaskStatus status){
+        return taskService.findByStatus(status);
+    }
+
+    @GetMapping("/priority/{priority}")
+    public List<Task> findByTaskPriority(@PathVariable TaskPriority priority){
+        return taskService.findByPriority(priority);
+    }
+
+    @GetMapping("/archived/{archived}")
+    public List<Task> findByArchived(@PathVariable boolean archived){
+        return taskService.findByArchived(archived);
+    }
+
+    @GetMapping("/due-before/{dateTime}")
+    public List<Task> findByDueDateBefore(@PathVariable LocalDateTime dateTime){
+        return taskService.findByDueDateBefore(dateTime);
+    }
+
+    @GetMapping("/search/{title}")
+    public List<Task> findByTitleContaining(@PathVariable String title){
+        return taskService.findByTitleContaining(title);
     }
 
     @PutMapping("/{id}")

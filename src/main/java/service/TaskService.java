@@ -1,6 +1,7 @@
 package service;
 
 import module.Task;
+import module.TaskPriority;
 import module.TaskRequest;
 import module.TaskStatus;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,6 @@ public class TaskService {
 
     public TaskService(ITaskRepository iTaskRepository) {
         this.iTaskRepository = iTaskRepository;
-//        this.taskRepository = taskRepository;
     }
 
     public Task createTask(TaskRequest taskRequest) {
@@ -25,6 +25,10 @@ public class TaskService {
 //        long id = repository.getSize();
 //        String id = UUID.randomUUID().toString();
 //         iTaskRepository.count();
+
+        if(taskRequest.getTitle() == null || taskRequest.getTitle().isBlank()){
+            throw new IllegalArgumentException("Title is required");
+        }
 
         Task task = new Task(taskRequest.getTitle(),taskRequest.getDescription(), taskRequest.getPriority(),taskRequest.getDueDate());
 
@@ -42,6 +46,32 @@ public class TaskService {
 
     public List<Task> getAllTasks() {
         return iTaskRepository.findAll();
+    }
+
+    public List<Task> findByStatus(TaskStatus status){
+        return iTaskRepository.findByStatus(status);
+    }
+
+    public List<Task> findByPriority(TaskPriority taskPriority){
+        if(taskPriority == null)
+            throw new IllegalStateException("Priority is required");
+        return iTaskRepository.findByTaskPriority(taskPriority);
+    }
+
+    public List<Task> findByArchived(boolean archived){
+        return iTaskRepository.findByArchived(archived);
+    }
+
+    public List<Task> findByDueDateBefore(LocalDateTime dateTime){
+        if(dateTime == null)
+            throw new IllegalStateException("Date is required");
+        return iTaskRepository.findByDueDateBefore(dateTime);
+    }
+
+    public List<Task> findByTitleContaining(String title){
+        if(title == null || title.isBlank())
+            throw new IllegalStateException("Title is required");
+        return iTaskRepository.findByTitleContaining(title);
     }
 
     public void updateTask(Long id, TaskRequest taskRequest){
