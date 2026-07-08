@@ -41,6 +41,18 @@ public class Task {
 
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public TaskPriority getTaskPriority() {
+        return taskPriority;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
     public String getTitle() {
         return title;
     }

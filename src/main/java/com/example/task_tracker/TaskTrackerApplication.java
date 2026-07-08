@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "controller",
         "service",
         "repository",
+        "exception",
         "module"
 })
 @EnableJpaRepositories(basePackages = "repository")

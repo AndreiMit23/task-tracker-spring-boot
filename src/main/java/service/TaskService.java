@@ -1,13 +1,11 @@
 package service;
 
-import module.Task;
-import module.TaskPriority;
-import module.TaskRequest;
-import module.TaskStatus;
+import module.*;
 import org.springframework.stereotype.Service;
 import repository.ITaskRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,61 +18,87 @@ public class TaskService {
         this.iTaskRepository = iTaskRepository;
     }
 
-    public Task createTask(TaskRequest taskRequest) {
+    private TaskResponse mapToResponse(Task task) {
+        return new TaskResponse(task.getId(), task.getTitle(), task.getStatus(), task.getDescription(), task.getTaskPriority(), task.getDueDate());
+    }
+
+    private List<TaskResponse> mapToResponseList(List<Task> tasks){
+        List<TaskResponse> taskResponses = new ArrayList<>();
+        for(Task task : tasks){
+            taskResponses.add(mapToResponse(task));
+        }
+
+        return taskResponses;
+    }
+
+    public TaskResponse createTask(TaskRequest taskRequest) {
 
 //        long id = repository.getSize();
 //        String id = UUID.randomUUID().toString();
 //         iTaskRepository.count();
 
-        if(taskRequest.getTitle() == null || taskRequest.getTitle().isBlank()){
+        if (taskRequest.getTitle() == null || taskRequest.getTitle().isBlank()) {
             throw new IllegalArgumentException("Title is required");
         }
 
-        Task task = new Task(taskRequest.getTitle(),taskRequest.getDescription(), taskRequest.getPriority(),taskRequest.getDueDate());
+        Task task = new Task(taskRequest.getTitle(), taskRequest.getDescription(), taskRequest.getPriority(), taskRequest.getDueDate());
 
         task.setCreatedAt(LocalDateTime.now());
         task.setUpdatedAt(LocalDateTime.now());
 
         iTaskRepository.save(task);
 
-        return task;
+        return mapToResponse(task);
     }
 
-    public Task getTaskByID(Long id) {
-        return iTaskRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task with id " + id + " not found"));
+    public TaskResponse getTaskByID(Long id) {
+        Task task = iTaskRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task with id " + id + " not found"));
+        return mapToResponse(task);
     }
 
-    public List<Task> getAllTasks() {
-        return iTaskRepository.findAll();
+    public List<TaskResponse> getAllTasks() {
+        List<Task> tasks = iTaskRepository.findAll();
+
+        return mapToResponseList(tasks);
     }
 
-    public List<Task> findByStatus(TaskStatus status){
-        return iTaskRepository.findByStatus(status);
+    public List<TaskResponse> findByStatus(TaskStatus status) {
+        List<Task> tasks = iTaskRepository.findByStatus(status);
+        return mapToResponseList(tasks);
     }
 
-    public List<Task> findByPriority(TaskPriority taskPriority){
-        if(taskPriority == null)
+    public List<TaskResponse> findByPriority(TaskPriority taskPriority) {
+        if (taskPriority == null)
             throw new IllegalStateException("Priority is required");
-        return iTaskRepository.findByTaskPriority(taskPriority);
+        List<Task> tasks = iTaskRepository.findByTaskPriority(taskPriority);
+
+        return mapToResponseList(tasks);
     }
 
-    public List<Task> findByArchived(boolean archived){
-        return iTaskRepository.findByArchived(archived);
+    public List<TaskResponse> findByArchived(boolean archived) {
+        List<Task> tasks = iTaskRepository.findByArchived(archived);
+
+        return mapToResponseList(tasks);
     }
 
-    public List<Task> findByDueDateBefore(LocalDateTime dateTime){
-        if(dateTime == null)
+    public List<TaskResponse> findByDueDateBefore(LocalDateTime dateTime) {
+
+        if (dateTime == null)
             throw new IllegalStateException("Date is required");
-        return iTaskRepository.findByDueDateBefore(dateTime);
+        List<Task> tasks = iTaskRepository.findByDueDateBefore(dateTime);
+
+        return mapToResponseList(tasks);
     }
 
-    public List<Task> findByTitleContaining(String title){
-        if(title == null || title.isBlank())
-            throw new IllegalStateException("Title is required");
-        return iTaskRepository.findByTitleContaining(title);
+    public List<TaskResponse> findByTitleContaining(String title) {
+        if (title == null || title.isEmpty())
+            throw new IllegalArgumentException("Title is required");
+        List<Task> tasks = iTaskRepository.findByTitleContaining(title);
+
+        return mapToResponseList(tasks);
     }
 
-    public void updateTask(Long id, TaskRequest taskRequest){
+    public void updateTask(Long id, TaskRequest taskRequest) {
 
         Task task = iTaskRepository.findById(id).orElseThrow();
 
@@ -92,10 +116,10 @@ public class TaskService {
         iTaskRepository.deleteById(id);
     }
 
-    public void deleteTask(Long id){
+    public void deleteTask(Long id) {
         Task task = iTaskRepository.findById(id).orElseThrow();
 
-        if(task.getStatus() != TaskStatus.COMPLETED)
+        if (task.getStatus() != TaskStatus.COMPLETED)
             throw new IllegalStateException("Only completed tasks can be deleted");
         iTaskRepository.delete(task);
     }
