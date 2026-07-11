@@ -1,9 +1,14 @@
 package module;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
 public class TaskRequest {
+    @Schema(description = "Task title", example = "Finish Spring project")
     private String title;
+    @Schema(description = "Task description",example = "This is a Spring project")
     private String description;
+    @Schema(description = "Task priority", example = "HIGH")
     private TaskPriority priority;
     private LocalDateTime dueDate;
 

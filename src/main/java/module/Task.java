@@ -1,6 +1,8 @@
 package module;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -24,8 +26,11 @@ public class Task {
     TaskPriority taskPriority = TaskPriority.MEDIUM;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     LocalDateTime createdAt;
+
     @Column(name = "updated_at")
+    @UpdateTimestamp
     LocalDateTime updatedAt;
 
     LocalDateTime dueDate;

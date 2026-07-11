@@ -2,17 +2,20 @@ package service;
 
 import mapper.TaskMapper;
 import module.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import repository.ITaskRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 
 @Service //componenta care tine logica de business
 public class TaskService {
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
     private final ITaskRepository iTaskRepository;
     private final TaskMapper taskMapper;
 
@@ -24,9 +27,7 @@ public class TaskService {
 
     public TaskResponse createTask(TaskRequest taskRequest) {
 
-//        long id = repository.getSize();
-//        String id = UUID.randomUUID().toString();
-//         iTaskRepository.count();
+        logger.info("Creating task with title '{}'", taskRequest.getTitle());
 
         if (taskRequest.getTitle() == null || taskRequest.getTitle().isBlank()) {
             throw new IllegalArgumentException("Title is required");
@@ -34,10 +35,9 @@ public class TaskService {
 
         Task task = taskMapper.toEntity(taskRequest);
 
-        task.setCreatedAt(LocalDateTime.now());
-        task.setUpdatedAt(LocalDateTime.now());
-
         iTaskRepository.save(task);
+
+        logger.info("Task created successfully with id '{}'", task.getId());
 
         return taskMapper.toResponse(task);
     }
@@ -48,20 +48,29 @@ public class TaskService {
     }
 
     public List<TaskResponse> getAllTasks() {
+        logger.info("Finding all tasks...");
         List<Task> tasks = iTaskRepository.findAll();
 
+        logger.info("Tasks found successfully");
         return taskMapper.toResponseList(tasks);
     }
 
     public List<TaskResponse> findByStatus(TaskStatus status) {
+        logger.info("Finding task by status {}", status);
         List<Task> tasks = iTaskRepository.findByStatus(status);
+
+        logger.info("Task by status {}, found successfully", status);
         return taskMapper.toResponseList(tasks);
     }
 
     public List<TaskResponse> findByPriority(TaskPriority taskPriority) {
-        if (taskPriority == null)
+        if (taskPriority == null) {
+            logger.error("Finding task by priority requires parameter");
             throw new IllegalStateException("Priority is required");
+        }
+        logger.info("Finding task by priority {}", taskPriority);
         List<Task> tasks = iTaskRepository.findByTaskPriority(taskPriority);
+        logger.info("Task by priority {} was found",taskPriority);
 
         return taskMapper.toResponseList(tasks);
     }
@@ -91,6 +100,7 @@ public class TaskService {
 
     public void updateTask(Long id, TaskRequest taskRequest) {
 
+        logger.info("Updating task {}", id);
         Task task = iTaskRepository.findById(id).orElseThrow();
 
         task.setTitle(taskRequest.getTitle());
@@ -98,9 +108,8 @@ public class TaskService {
         task.setTaskPriority(taskRequest.getPriority());
         task.setDueDate(taskRequest.getDueDate());
 
-        task.setUpdatedAt(LocalDateTime.now());
-
         iTaskRepository.save(task);
+        logger.info("Task {} updated successfully", id);
     }
 
     public void deleteTaskById(Long id) {
@@ -110,8 +119,10 @@ public class TaskService {
     public void deleteTask(Long id) {
         Task task = iTaskRepository.findById(id).orElseThrow();
 
-        if (task.getStatus() != TaskStatus.COMPLETED)
+        if (task.getStatus() != TaskStatus.COMPLETED) {
+            logger.warn("Attempt to delete task {} that is not completed", id);
             throw new IllegalStateException("Only completed tasks can be deleted");
+        }
         iTaskRepository.delete(task);
     }
 }
